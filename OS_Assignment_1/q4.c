@@ -74,6 +74,40 @@ void fifo_process(Process process[], int n, int response_time[], int turnaround_
   printf("Average Response Time: %f\n", total_response_time / n);
 }
 
+void sjf(Process process[], int n, int response_time[], int turnaround_time[], int completion_time[]) {
+  int sum, i, j, k;
+  float total_turnaround_time = 0, total_response_time = 0;
+
+  bubble_sort(process, n);
+
+  sum = process[0].arrival_time;
+  for (j = 0; j < n; j++) {
+    if (sum < process[j].arrival_time) {
+      sum = process[j].arrival_time;
+    }
+    sum = sum + process[j].burst_time;
+    completion_time[j] = sum;
+  }
+
+  for (k = 0; k < n; k++) {
+    turnaround_time[k] = completion_time[k] - process[k].arrival_time;
+    total_turnaround_time = total_turnaround_time + turnaround_time[k];
+  }
+
+  for (k = 0; k < n; k++) {
+    response_time[k] = turnaround_time[k] - process[k].burst_time;
+    total_response_time = total_response_time + response_time[k];
+  }
+
+  printf("Order of execution: ");
+  for (i = 0; i < n; i++) {
+    printf("P%d ", process[i].id);
+  }
+  printf("\n");
+
+  printf("Average Turnaround Time: %f\n", total_turnaround_time / n);
+  printf("Average Response Time: %f\n", total_response_time / n);
+}
 
 void Fifo(Process process[], int n) {
   int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
@@ -89,7 +123,7 @@ void Fifo(Process process[], int n) {
 void Sjf(Process process[], int n) {
   int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
 
-  //sjf(process, n, response_time, turnaround_time, completion_time);
+  sjf(process, n, response_time, turnaround_time, completion_time);
 
   for (int i = 0; i < n; i++) {
     process[i].response_time = response_time[i];
