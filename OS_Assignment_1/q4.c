@@ -4,6 +4,9 @@
 #include <limits.h>
 
 #define NUM_P_MAX 100
+#define MAX 100
+#define false 0
+#define true 1
 
 typedef struct {
   int id;
@@ -12,109 +15,151 @@ typedef struct {
   int remaining_time;
   int response_time;
   int turnaround_time;
+  int time_quantum;
 } Process;
 
-void cal_t(Process process[], int n, int order[]);
-void cal_avg(Process process[], int n, float *avg_r_t, float *avg_ta_t);
+void bubble_sort(Process process[], int n);
 void Fifo(Process process[], int n);
 void Sjf(Process process[], int n);
 void Srtf(Process process[], int n);
 void Rr(Process process[], int n, int t_slice);
 
+void bubble_sort(Process process[], int n) {
+  int i, j;
+  Process temp;
 
-void cal_t(Process process[], int n, int order[]){
-  int curr_t = 0;
-  int complete = 0;
-  int pid;
-  while(complete<n){
-    int rem_t = INT_MAX;
-    int min_i = -1;
-
-    for(int i =0;i<n;i++){
-      if(process[i].arrival_time<=curr_t && process[i].remaining_time < rem_t && process[i].remaining_time>0){
-        rem_t = process[i].remaining_time;
-        int min_i = i;
+  for (i = 0; i < n - 1; i++) {
+    for (j = 0; j < n - i - 1; j++) {
+      if (process[j].arrival_time > process[j + 1].arrival_time || (process[j].arrival_time == process[j + 1].arrival_time && process[j].id > process[j + 1].id)) {
+        temp = process[j];
+        process[j] = process[j + 1];
+        process[j + 1] = temp;
       }
     }
-    if(min_i == -1){
-      curr_t++;
-      continue;
-    }
-
-    if(process[min_i].response_time == -1){
-      process[min_i].response_time = curr_t - process[min_i].arrival_time;
-    }
-
-    process[min_i].remaining_time--;
-    curr_t++;
-
-    if(process[min_i].remaining_time == 0){
-      complete++;
-      process[min_i].turnaround_time = curr_t - process[min_i].arrival_time;
-      order[complete-1] = process[min_i].id;
-    }
   }
 }
 
-void cal_avg(Process process[], int n, float *avg_r_t, float *avg_ta_t){
-  float tot_r_t = 0;
-  float tot_ta_t = 0;
+void fifo_process(Process process[], int n, int response_time[], int turnaround_time[], int completion_time[]) {
+  int sum, i, j, k;
+  float total_turnaround_time = 0, total_response_time = 0;
 
-  for(int i = 0; i<n;i++){
-    tot_r_t += process[i].response_time;
-    tot_ta_t += process[i].turnaround_time;
+  sum = process[0].arrival_time;
+  for (j = 0; j < n; j++) {
+    if (sum < process[j].arrival_time) {
+      sum = process[j].arrival_time;
+    }
+    sum = sum + process[j].burst_time;
+    completion_time[j] = sum;
   }
 
-  *avg_r_t = tot_r_t/n;
-  *avg_ta_t = tot_ta_t/n;
-}
-
-
-void Fifo(Process process[], int n){
-  int order[n];
-  float avg_r_t, avg_ta_t;
-
-  for(int i = 0;i<n;i++){
-    process[i].remaining_time = process[i].burst_time;
-    process[i].response_time = -1;
+  /* Calculate Turn Around time */
+  for (k = 0; k < n; k++) {
+    turnaround_time[k] = completion_time[k] - process[k].arrival_time;
+    total_turnaround_time = total_turnaround_time + turnaround_time[k];
   }
 
-  printf("Check check");
-  cal_t(process, n, order);
-  cal_avg(process,n,&avg_r_t,&avg_ta_t);
-
-  printf("FIFO order of Execution: ");
-  for(int i = 0;i<n;i++){
-    printf("%d ", order[i]);
+  /* Calculate Response time */
+  for (k = 0; k < n; k++) {
+    response_time[k] = turnaround_time[k] - process[k].burst_time;
+    total_response_time = total_response_time + response_time[k];
   }
 
+  printf("Order of execution: ");
+  for (i = 0; i < n; i++) {
+    printf("P%d ", process[i].id);
+  }
   printf("\n");
-  printf("FIFO Average Response Time: %.2f\n", avg_r_t);
-  printf("FIFO Average Turnaround Time: %.2f\n", avg_ta_t);
+
+  printf("Average Turnaround Time: %f\n", total_turnaround_time / n);
+  printf("Average Response Time: %f\n", total_response_time / n);
 }
 
-int main(){
-  int n, i;
+
+void Fifo(Process process[], int n) {
+  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+
+  fifo_process(process, n, response_time, turnaround_time, completion_time);
+
+  for (int i = 0; i < n; i++) {
+    process[i].response_time = response_time[i];
+    process[i].turnaround_time = turnaround_time[i];
+  }
+}
+
+void Sjf(Process process[], int n) {
+  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+
+  //sjf(process, n, response_time, turnaround_time, completion_time);
+
+  for (int i = 0; i < n; i++) {
+    process[i].response_time = response_time[i];
+    process[i].turnaround_time = turnaround_time[i];
+  }
+}
+
+void Rr(Process process[], int n, int t_slice) {
+  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+
+  // Set the time_quantum field for each process
+  for (int i = 0; i < n; i++) {
+    process[i].time_quantum = t_slice;
+  }
+
+  //rr(process, n, response_time, turnaround_time, completion_time);
+
+  for (int i = 0; i < n; i++) {
+    process[i].response_time = response_time[i];
+    process[i].turnaround_time = turnaround_time[i];
+  }
+}
+
+void Srtf(Process process[], int n) {
+  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+
+  //srtf(process, n, response_time, turnaround_time, completion_time);
+
+  for (int i = 0; i < n; i++) {
+    process[i].response_time = response_time[i];
+    process[i].turnaround_time = turnaround_time[i];
+  }
+}
+
+int main() {
+  int n, i, choice, t_slice;
   Process process[NUM_P_MAX];
   printf("Enter the number of Processes: \n");
   scanf("%d", &n);
 
-
-  for(i = 0;i<n;i++){
-    printf("Enter the Arrival time and Burst time for process %d : \n",i+1);
+  for (i = 0; i < n; i++) {
+    printf("Enter the Arrival time and Burst time for process %d : \n", i + 1);
     scanf("%d %d", &process[i].arrival_time, &process[i].burst_time);
-    process[i].id = i+1;
-
+    process[i].id = i + 1;
+    
     int c;
-    while((c = getchar()) != '\n' && c!=EOF){}
+    while ((c = getchar()) != '\n' && c != EOF) {}
   }
 
-  printf("Check Check");
-  for(int k = 0;k<n;k++){
-    printf("%d : %d ", process[k].arrival_time, process[k].burst_time);
+  printf("Enter the method of scheduling you wish to perform: \n");
+  printf("1. FIFO\n");
+  printf("2. SJF\n");
+  printf("3. RR\n");
+  printf("4. SRTF\n");
+  scanf("%d", &choice);
+
+  if (choice == 1) {
+    Fifo(process, n);
+  } else if (choice == 2) {
+    Sjf(process, n);
+  } else if (choice == 3) {
+    printf("Enter the time slice for Round Robin: \n");
+    scanf("%d", &t_slice);
+    Rr(process, n, t_slice);
+  } else if (choice == 4) {
+    Srtf(process, n);
+  } else {
+    printf("Invalid choice.\n");
   }
 
-  printf("Check Check");
-  Fifo(process,n);
   return 0;
 }
+
