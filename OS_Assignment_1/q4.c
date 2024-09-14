@@ -4,7 +4,6 @@
 #include <limits.h>
 
 #define NUM_P_MAX 100
-#define MAX 100
 #define false 0
 #define true 1
 
@@ -52,26 +51,24 @@ void fifo_process(Process process[], int n, int response_time[], int turnaround_
     completion_time[j] = sum;
   }
 
-  /* Calculate Turn Around time */
   for (k = 0; k < n; k++) {
     turnaround_time[k] = completion_time[k] - process[k].arrival_time;
     total_turnaround_time = total_turnaround_time + turnaround_time[k];
   }
 
-  /* Calculate Response time */
   for (k = 0; k < n; k++) {
     response_time[k] = turnaround_time[k] - process[k].burst_time;
     total_response_time = total_response_time + response_time[k];
   }
 
-  printf("Order of execution: ");
-  for (i = 0; i < n; i++) {
-    printf("P%d ", process[i].id);
-  }
-  printf("\n");
-
   printf("Average Turnaround Time: %f\n", total_turnaround_time / n);
   printf("Average Response Time: %f\n", total_response_time / n);
+  printf("\n");
+  printf("Order of execution: ");
+  for (i = 0; i < n; i++) {
+    printf("%d ", process[i].id);
+  }
+
 }
 
 void sjf(Process process[], int n, int response_time[], int turnaround_time[], int completion_time[]) {
@@ -99,14 +96,14 @@ void sjf(Process process[], int n, int response_time[], int turnaround_time[], i
     total_response_time = total_response_time + response_time[k];
   }
 
-  printf("Order of execution: ");
-  for (i = 0; i < n; i++) {
-    printf("P%d ", process[i].id);
-  }
-  printf("\n");
-
   printf("Average Turnaround Time: %f\n", total_turnaround_time / n);
   printf("Average Response Time: %f\n", total_response_time / n);
+  printf("\n");
+  printf("Order of execution: ");
+  for (i = 0; i < n; i++) {
+    printf("%d ", process[i].id);
+  }
+
 }
 
 void srtf(Process process[], int n, int response_time[], int turnaround_time[], int completion_time[]) {
@@ -139,26 +136,24 @@ void srtf(Process process[], int n, int response_time[], int turnaround_time[], 
     }
   }
 
-  /* Calculate Turn Around time */
   for (k = 0; k < n; k++) {
     turnaround_time[k] = completion_time[k] - process[k].arrival_time;
     total_turnaround_time = total_turnaround_time + turnaround_time[k];
   }
 
-  /* Calculate Response time */
   for (k = 0; k < n; k++) {
     response_time[k] = turnaround_time[k] - process[k].burst_time;
     total_response_time = total_response_time + response_time[k];
   }
 
-  printf("Order of execution: ");
-  for (i = 0; i < n; i++) {
-    printf("P%d ", process[i].id);
-  }
-  printf("\n");
-
   printf("Average Turnaround Time: %f\n", total_turnaround_time / n);
   printf("Average Response Time: %f\n", total_response_time / n);
+  printf("\n");
+  printf("Order of execution: ");
+  for (i = 0; i < n; i++) {
+    printf("%d ", process[i].id);
+  }
+
 }
 
 
@@ -201,13 +196,11 @@ void rr(Process process[], int n, int response_time[], int turnaround_time[], in
   }
   printf("\n");
 
-  /* Calculate Turn Around time */
   for (k = 0; k < n; k++) {
     turnaround_time[k] = completion_time[k] - process[k].arrival_time;
     total_turnaround_time = total_turnaround_time + turnaround_time[k];
   }
 
-  /* Calculate Response time */
   for (k = 0; k < n; k++) {
     response_time[k] = turnaround_time[k] - process[k].burst_time;
     total_response_time = total_response_time + response_time[k];
@@ -218,7 +211,7 @@ void rr(Process process[], int n, int response_time[], int turnaround_time[], in
 }
 
 void Fifo(Process process[], int n) {
-  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+  int response_time[NUM_P_MAX], turnaround_time[NUM_P_MAX], completion_time[NUM_P_MAX];
 
   fifo_process(process, n, response_time, turnaround_time, completion_time);
 
@@ -229,7 +222,7 @@ void Fifo(Process process[], int n) {
 }
 
 void Sjf(Process process[], int n) {
-  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+  int response_time[NUM_P_MAX], turnaround_time[NUM_P_MAX], completion_time[NUM_P_MAX];
 
   sjf(process, n, response_time, turnaround_time, completion_time);
 
@@ -240,9 +233,8 @@ void Sjf(Process process[], int n) {
 }
 
 void Rr(Process process[], int n, int t_slice) {
-  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+  int response_time[NUM_P_MAX], turnaround_time[NUM_P_MAX], completion_time[NUM_P_MAX];
 
-  // Set the time_quantum field for each process
   for (int i = 0; i < n; i++) {
     process[i].time_quantum = t_slice;
   }
@@ -256,7 +248,7 @@ void Rr(Process process[], int n, int t_slice) {
 }
 
 void Srtf(Process process[], int n) {
-  int response_time[MAX], turnaround_time[MAX], completion_time[MAX];
+  int response_time[NUM_P_MAX], turnaround_time[NUM_P_MAX], completion_time[NUM_P_MAX];
 
   srtf(process, n, response_time, turnaround_time, completion_time);
 
