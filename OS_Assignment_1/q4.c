@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <limits.h>
 
+#define NUM_P_MAX 100
 
 typedef struct {
   int id;
@@ -93,20 +94,27 @@ void Fifo(Process process[], int n){
 }
 
 int main(){
-  int n, pid = 0;
-
+  int n, i;
+  Process process[NUM_P_MAX];
   printf("Enter the number of Processes: \n");
   scanf("%d", &n);
 
-  const int NUM_P = n;
-  Process process[NUM_P];
 
-  for(int i = 1;i<=n;i++){
-    printf("Enter the Burst time and Arrival time for process %d : \n",pid+1);
-    scanf("%d %d", &process[pid].burst_time, &process[pid].arrival_time);
-    pid+=1;
+  for(i = 0;i<n;i++){
+    printf("Enter the Arrival time and Burst time for process %d : \n",i+1);
+    scanf("%d %d", &process[i].arrival_time, &process[i].burst_time);
+    process[i].id = i+1;
+
+    int c;
+    while((c = getchar()) != '\n' && c!=EOF){}
   }
-  
+
+  printf("Check Check");
+  for(int k = 0;k<n;k++){
+    printf("%d : %d ", process[k].arrival_time, process[k].burst_time);
+  }
+
+  printf("Check Check");
   Fifo(process,n);
   return 0;
 }
